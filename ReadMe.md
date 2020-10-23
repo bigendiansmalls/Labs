@@ -1,4 +1,4 @@
-# Evil Mainframe Labs for Mainframe Penetration Testing Class
+# Evil Mainframe Notes and Labs for Mainframe Penetration Testing Class
 
 ## Folders:
 
@@ -6,12 +6,7 @@
 
 **Day_1**: Contains `Day1_Labs.html` which contains all the labs and working folders for the various labs as needed
 
-**Day_2**: Contains `Day2_Labs.html` which contains all the labs and working fo
-lders for the various labs as needed
-
-**OLD**: Old Backups of various Labs and writeups, kept for historical purposes
-
-**Tools**: Folder containing various opensource tools and scripts used in mainframe penetration testing
+**Day_2**: Contains `Day2_Labs.html` which contains all the labs and working folders for the various labs as needed
 
 ## Contact
 
@@ -19,4 +14,4 @@ For questions and inquiries email info@evilmainframe.com
 
 **Twitter**: @evilmainframe
 
-Copyright EM Training LLC
+Labs and Notes are Copyright EM Training LLC
