@@ -1,0 +1,8 @@
+#!/usr/bin/env python3
+import sys
+code = ""
+while (code != "dog"):
+    code=input("Enter code: ")
+    print("You entered {myInput}".format(myInput=code))
+sys.exit(0)
+

