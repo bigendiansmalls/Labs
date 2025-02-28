@@ -3,5 +3,6 @@
 *.html_backup
 .vscode/
 *.code-workspace
+*.pyc
 
 
