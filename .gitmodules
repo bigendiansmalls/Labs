@@ -34,3 +34,6 @@
 	path = Tools/cicspwn
 	url = https://github.com/bigendiansmalls/cicspwn.git
 	branch = main
+[submodule "Tools/TShOcker"]
+	path = Tools/TShOcker
+	url = https://github.com/bigendiansmalls/TShOcker.git
